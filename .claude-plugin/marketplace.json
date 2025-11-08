@@ -1,0 +1,24 @@
+{
+  "plugins": [
+    {
+      "name": "mcp-code-execution",
+      "displayName": "MCP Code Execution",
+      "version": "1.0.0",
+      "description": "Token-efficient MCP server interaction through code execution. Reduces context usage by 95-99% through progressive tool disclosure and in-environment processing.",
+      "author": "Anthropic",
+      "license": "MIT",
+      "repository": "https://github.com/bjoernbethge/mcp-code-execution",
+      "homepage": "https://github.com/bjoernbethge/mcp-code-execution#readme",
+      "tags": ["mcp", "automation", "code", "token-efficiency", "python", "typescript"],
+      "keywords": [
+        "MCP",
+        "Model Context Protocol",
+        "code execution",
+        "token efficiency",
+        "automation",
+        "data processing",
+        "skill registry"
+      ]
+    }
+  ]
+}
