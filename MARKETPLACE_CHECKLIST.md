@@ -169,12 +169,16 @@ git clone https://github.com/bjoernbethge/mcp-code-execution.git
 
 ## Current Status
 
-✅ **Ready for Private Testing**
+✅ **Plugin Validation Passed**
 
 - Repository: https://github.com/bjoernbethge/mcp-code-execution (private)
-- Commit: 690fee0
-- Files: 37 committed
-- Status: Awaiting local installation and testing
+- Plugin Manifest: `.claude-plugin/plugin.json`
+- Validation: **PASSED** ✔️ (`claude plugin validate`)
+- Commits: 3
+  1. Initial commit (37 files)
+  2. Marketplace checklist
+  3. Plugin structure fixes & validation
+- Status: Ready for testing with Claude Code
 
 ---
 
