@@ -3,35 +3,8 @@
   "version": "1.0.0",
   "description": "Token-efficient MCP server interaction through code execution. Reduces context usage by 95-99%.",
   "author": {
-    "name": "Anthropic"
+    "name": "bjoernbethge"
   },
   "license": "MIT",
-  "repository": "https://github.com/bjoernbethge/mcp-code-execution",
-  "commands": [
-    {
-      "name": "setup-mcp",
-      "description": "Initialize MCP workspace with Python (uv) and TypeScript (bun) support",
-      "path": "commands/setupMCP.ts"
-    },
-    {
-      "name": "generate-wrappers",
-      "description": "Generate Python and TypeScript wrappers for configured MCP servers",
-      "path": "commands/generateWrappers.ts"
-    },
-    {
-      "name": "list-skills",
-      "description": "List all available reusable skills",
-      "path": "commands/listSkills.ts"
-    },
-    {
-      "name": "create-skill",
-      "description": "Create a new reusable skill from successful patterns",
-      "path": "commands/createSkill.ts"
-    },
-    {
-      "name": "validate-config",
-      "description": "Validate MCP configuration file",
-      "path": "commands/validateConfig.ts"
-    }
-  ]
+  "repository": "https://github.com/bjoernbethge/mcp-code-execution"
 }
