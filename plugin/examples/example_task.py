@@ -29,7 +29,6 @@ Total: ~1,500 tokens (98.5% reduction)
 import asyncio
 from pathlib import Path
 
-
 # NOTE: This is a template showing the pattern.
 # Claude will generate actual server wrappers when you ask it to:
 # "Setup MCP server wrappers for Google Drive and Salesforce"
@@ -44,8 +43,8 @@ async def example_document_to_crm():
     """
     
     # Import only the tools we need (loaded from filesystem on-demand)
-    # from servers.google_drive import get_document
-    # from servers.salesforce import update_record
+    # from plugin.servers.python.google_drive import get_document
+    # from plugin.servers.python.salesforce import update_record
     
     print("1. Fetching document from Google Drive...")
     # doc = await get_document(document_id='abc123')
@@ -115,8 +114,8 @@ async def example_batch_processing():
     print("Example: Batch Data Processing")
     print("="*60 + "\n")
     
-    # from servers.salesforce import query
-    # from servers.google_sheets import update_sheet
+    # from plugin.servers.python.salesforce import query
+    # from plugin.servers.python.google_sheets import update_sheet
     
     print("1. Querying all leads from Salesforce...")
     # leads = await query(soql='SELECT Id, Name, Status, Value FROM Lead')
@@ -185,9 +184,9 @@ async def example_with_skills():
     print("="*60 + "\n")
     
     # After Claude has developed and saved skills, tasks become simpler
-    # from skills.extract_meeting_actions import extract_actions
-    # from skills.filter_large_dataset import filter_large_dataset
-    # from servers.google_drive import get_document
+    # from plugin.skills.python.extract_meeting_actions import extract_actions
+    # from plugin.skills.python.filter_large_dataset import filter_large_dataset
+    # from plugin.servers.python.google_drive import get_document
     
     print("1. Using skill: extract_meeting_actions")
     # doc = await get_document('meeting_notes_123')
@@ -212,7 +211,7 @@ async def example_with_skills():
 
 async def main():
     """Run all examples"""
-    print("MCP Code Execution Examples")
+    print("MCP Code Execution Examples (Python)")
     print("=" * 60)
     print()
     print("These examples demonstrate token-efficient MCP interaction")
@@ -237,3 +236,4 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+

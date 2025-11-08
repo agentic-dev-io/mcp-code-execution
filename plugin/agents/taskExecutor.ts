@@ -15,12 +15,45 @@
 
 import fs from 'fs/promises';
 import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+/**
+ * Get plugin root directory
+ * This finds the plugin directory regardless of where the code is executed from
+ */
+function getPluginRoot(): string {
+  // Try to find plugin directory by looking for plugin.json or plugin/agents
+  const currentFile = fileURLToPath(import.meta.url);
+  const currentDir = dirname(currentFile);
+  
+  // If we're in plugin/agents/, go up one level
+  if (currentDir.endsWith('plugin/agents') || currentDir.endsWith('plugin\\agents')) {
+    return path.join(currentDir, '..');
+  }
+  
+  // Otherwise, try to find plugin directory from cwd
+  const cwd = process.cwd();
+  const pluginPath = path.join(cwd, 'plugin');
+  
+  // Check if plugin directory exists (synchronous check)
+  try {
+    const fsSync = require('fs');
+    if (fsSync.existsSync(pluginPath)) {
+      return pluginPath;
+    }
+  } catch {}
+  
+  // Fallback to cwd if plugin directory not found
+  return cwd;
+}
 
 interface TaskConfig {
   description: string;
   context?: Record<string, any>;
   servers?: string[];
   skills?: string[];
+  language?: 'python' | 'typescript';
   options?: {
     maxRetries?: number;
     timeout?: number;
@@ -74,20 +107,26 @@ export async function executeTask(config: TaskConfig): Promise<TaskResult> {
   };
 
   try {
-    // Phase 1: Discover available tools (0 context tokens)
-    console.log('📚 Phase 1: Progressive Tool Discovery...');
-    const availableTools = await discoverTools(config.servers);
-    console.log(`   ✓ Discovered ${availableTools.length} tools from filesystem`);
+    // Phase 1: Discover available tools and skills (0 context tokens)
+    const language = config.language || 'typescript';
+    console.log(`📚 Phase 1: Progressive Tool Discovery (${language})...`);
+    const availableTools = await discoverTools(config.servers, language);
+    const availableSkills = await discoverSkills(language);
+    console.log(`   ✓ Discovered ${availableTools.length} ${language} tools from filesystem`);
+    console.log(`   ✓ Discovered ${availableSkills.length} ${language} skills from filesystem`);
     result.metrics!.contextTokensIn += 0; // Discovery happens in environment
 
     // Phase 2: Generate execution code
-    console.log('\n✍️  Phase 2: Generating Execution Code...');
+    console.log(`\n✍️  Phase 2: Generating ${language} Execution Code...`);
     const executionCode = await generateExecutionCode(
       config.description,
       availableTools,
+      availableSkills,
+      language,
+      config.skills,
       config.context
     );
-    console.log(`   ✓ Generated ${executionCode.split('\n').length} lines of code`);
+    console.log(`   ✓ Generated ${executionCode.split('\n').length} lines of ${language} code`);
     result.code = executionCode;
     result.metrics!.contextTokensIn += estimateTokens(executionCode);
 
@@ -136,15 +175,17 @@ export async function executeTask(config: TaskConfig): Promise<TaskResult> {
  * Phase 1: Discover tools from filesystem
  * This is the "progressive disclosure" mechanism - tools loaded on-demand, not preloaded
  */
-async function discoverTools(requestedServers?: string[]): Promise<string[]> {
+async function discoverTools(requestedServers?: string[], language: 'python' | 'typescript' = 'typescript'): Promise<string[]> {
   const tools: string[] = [];
 
   try {
-    const serversDir = path.join(process.cwd(), 'servers', 'typescript');
+    const pluginRoot = getPluginRoot();
+    const serversDir = path.join(pluginRoot, 'servers', language);
     const servers = await fs.readdir(serversDir, { withFileTypes: true });
 
     for (const serverDir of servers) {
       if (!serverDir.isDirectory()) continue;
+      if (serverDir.name.startsWith('_')) continue; // Skip internal directories
 
       const serverName = serverDir.name;
 
@@ -156,38 +197,179 @@ async function discoverTools(requestedServers?: string[]): Promise<string[]> {
       const toolFiles = await fs.readdir(toolsPath);
 
       for (const file of toolFiles) {
-        if (file.endsWith('.ts') && file !== 'index.ts') {
+        if (language === 'typescript' && file.endsWith('.ts') && file !== 'index.ts') {
           const toolName = file.replace('.ts', '');
+          tools.push(`${serverName}/${toolName}`);
+        } else if (language === 'python' && file.endsWith('.py') && file !== '__init__.py') {
+          const toolName = file.replace('.py', '');
           tools.push(`${serverName}/${toolName}`);
         }
       }
     }
   } catch (error) {
-    console.warn(`⚠️  Could not discover tools from filesystem: ${error}`);
+    console.warn(`⚠️  Could not discover ${language} tools from filesystem: ${error}`);
   }
 
   return tools;
 }
 
 /**
+ * Discover available skills from filesystem
+ */
+async function discoverSkills(language: 'python' | 'typescript' = 'typescript'): Promise<string[]> {
+  const skills: string[] = [];
+
+  try {
+    const pluginRoot = getPluginRoot();
+    const skillsDir = path.join(pluginRoot, 'skills', language);
+    const skillFiles = await fs.readdir(skillsDir);
+
+    for (const file of skillFiles) {
+      if (language === 'typescript' && file.endsWith('.ts') && file !== 'index.ts') {
+        const skillName = file.replace('.ts', '');
+        skills.push(skillName);
+      } else if (language === 'python' && file.endsWith('.py') && file !== '__init__.py') {
+        const skillName = file.replace('.py', '');
+        skills.push(skillName);
+      }
+    }
+  } catch (error) {
+    // Skills directory might not exist
+  }
+
+  return skills;
+}
+
+/**
  * Phase 2: Generate execution code
  * This is the "agent writes code" mechanism
- * Agent generates TypeScript that will execute locally
+ * Agent generates code (Python or TypeScript) that will execute locally
  */
 async function generateExecutionCode(
   taskDescription: string,
   availableTools: string[],
+  availableSkills: string[],
+  language: 'python' | 'typescript',
+  requestedSkills?: string[],
   context?: Record<string, any>
 ): Promise<string> {
   // In production, Claude would generate this code based on taskDescription
   // For now, return a template showing the pattern
 
+  if (language === 'python') {
+    return generatePythonCode(taskDescription, availableTools, availableSkills, requestedSkills);
+  } else {
+    return generateTypeScriptCode(taskDescription, availableTools, availableSkills, requestedSkills);
+  }
+}
+
+function generatePythonCode(
+  taskDescription: string,
+  availableTools: string[],
+  availableSkills: string[],
+  requestedSkills?: string[]
+): string {
+  // Import tools
   const toolImports = availableTools
-    .slice(0, 3) // Show first 3 as examples
+    .slice(0, 5) // Show first 5 as examples
+    .map(tool => {
+      const [server, toolName] = tool.split('/');
+      const pythonName = toolName.replace(/-/g, '_');
+      const serverName = server.replace(/-/g, '_');
+      return `from plugin.servers.python.${serverName} import ${pythonName}`;
+    })
+    .join('\n');
+
+  // Import skills (use requested skills or all available)
+  const skillsToUse = requestedSkills && requestedSkills.length > 0
+    ? availableSkills.filter(s => requestedSkills.includes(s))
+    : availableSkills.slice(0, 2); // Show first 2 as examples
+
+  const skillImports = skillsToUse
+    .map(skill => {
+      const pythonName = skill.replace(/-/g, '_');
+      return `from plugin.skills.python.${pythonName} import *`;
+    })
+    .join('\n');
+
+  const code = `"""
+Auto-generated execution code for: "${taskDescription}"
+This code executes locally - data stays in environment, not context
+"""
+
+import asyncio
+import json
+${toolImports}
+${skillImports ? '\n' + skillImports : ''}
+
+async def execute_task():
+    results = []
+    
+    # Data processing happens HERE, not in context
+    # Only print() output flows to context
+    
+    try:
+        # Example: Process data locally
+        data = {
+            'itemsProcessed': 0,
+            'summary': '${taskDescription}'
+        }
+        
+        # Transform/filter data locally (0 context tokens)
+        filtered = data
+        
+        results.append({
+            'status': 'completed',
+            'itemsProcessed': filtered['itemsProcessed'],
+            'summary': filtered['summary']
+        })
+        
+        # Only summary flows to context
+        print(json.dumps({
+            'success': True,
+            'dataProcessedLocally': 1024,  # Example: bytes processed locally
+            'results': results
+        }))
+        
+    except Exception as error:
+        print(json.dumps({
+            'success': False,
+            'error': str(error)
+        }))
+
+# Execute immediately
+if __name__ == '__main__':
+    asyncio.run(execute_task())
+`;
+
+  return code;
+}
+
+function generateTypeScriptCode(
+  taskDescription: string,
+  availableTools: string[],
+  availableSkills: string[],
+  requestedSkills?: string[]
+): string {
+  // Import tools
+  const toolImports = availableTools
+    .slice(0, 5) // Show first 5 as examples
     .map(tool => {
       const [server, toolName] = tool.split('/');
       const camelCase = toolName.replace(/-./g, x => x[1].toUpperCase());
-      return `import { ${camelCase} } from './servers/typescript/${server}/index.js';`;
+      return `import { ${camelCase} } from './plugin/servers/typescript/${server}/index.js';`;
+    })
+    .join('\n');
+
+  // Import skills (use requested skills or all available)
+  const skillsToUse = requestedSkills && requestedSkills.length > 0
+    ? availableSkills.filter(s => requestedSkills.includes(s))
+    : availableSkills.slice(0, 2); // Show first 2 as examples
+
+  const skillImports = skillsToUse
+    .map(skill => {
+      const camelCase = skill.replace(/-./g, x => x[1].toUpperCase());
+      return `import { ${camelCase} } from './plugin/skills/typescript/${skill}.js';`;
     })
     .join('\n');
 
@@ -195,6 +377,7 @@ async function generateExecutionCode(
 // Auto-generated execution code for: "${taskDescription}"
 // This code executes locally - data stays in environment, not context
 ${toolImports}
+${skillImports ? '\n' + skillImports : ''}
 
 export async function executeTask() {
   const results = [];

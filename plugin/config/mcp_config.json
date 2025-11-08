@@ -1,0 +1,29 @@
+{
+  "mcpServers": {
+    "google-drive": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-gdrive"],
+      "env": {
+        "GDRIVE_CLIENT_ID": "your-client-id",
+        "GDRIVE_CLIENT_SECRET": "your-client-secret"
+      }
+    },
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "./workspace"]
+    },
+    "sqlite": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-sqlite", "--db-path", "./workspace/data.db"]
+    }
+  },
+  "_comment": {
+    "note": "You can also use 'bunx' instead of 'npx' for faster execution",
+    "example": {
+      "filesystem-bun": {
+        "command": "bunx",
+        "args": ["@modelcontextprotocol/server-filesystem", "./workspace"]
+      }
+    }
+  }
+}
