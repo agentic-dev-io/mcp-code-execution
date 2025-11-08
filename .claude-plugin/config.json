@@ -1,0 +1,128 @@
+{
+  "plugin": {
+    "name": "mcp-code-execution",
+    "version": "1.0.0",
+    "enabled": true
+  },
+
+  "execution": {
+    "maxRetries": 3,
+    "retryDelayMs": 1000,
+    "maxRetryDelayMs": 60000,
+    "exponentialBase": 2.0,
+    "jitter": true,
+    "requestTimeoutMs": 30000,
+    "connectionTimeoutMs": 10000
+  },
+
+  "security": {
+    "enabled": true,
+    "policies": {
+      "workspace": {
+        "enabled": true,
+        "workspaceDirectory": "./workspace",
+        "allowedExtensions": [
+          ".py",
+          ".ts",
+          ".js",
+          ".json",
+          ".txt",
+          ".md",
+          ".csv",
+          ".yaml",
+          ".yml"
+        ]
+      },
+      "rateLimit": {
+        "enabled": true,
+        "callsPerMinute": 60,
+        "callsPerHour": 1000,
+        "maxConcurrentCalls": 10,
+        "perServer": {
+          "filesystem": { "callsPerMinute": 100 },
+          "google-drive": { "callsPerMinute": 30 }
+        }
+      },
+      "sensitiveData": {
+        "enabled": true,
+        "patternMatching": true,
+        "redactLogging": true,
+        "sensitivePatterns": [
+          "password",
+          "secret",
+          "token",
+          "api_key",
+          "private_key",
+          "credentials"
+        ]
+      },
+      "inputValidation": {
+        "enabled": true,
+        "maxArgumentSize": 1000000,
+        "detectInjection": true
+      }
+    }
+  },
+
+  "monitoring": {
+    "enabled": true,
+    "metricsCollection": {
+      "enabled": true,
+      "trackTokenUsage": true,
+      "trackDuration": true,
+      "trackErrors": true,
+      "trackRetries": true
+    },
+    "logging": {
+      "enabled": true,
+      "level": "info",
+      "logFile": "mcp-execution.log",
+      "maxLogSize": 10485760,
+      "retentionDays": 30
+    },
+    "alerting": {
+      "enabled": false,
+      "onHighTokenUsage": {
+        "threshold": 100000,
+        "action": "warn"
+      },
+      "onHighErrorRate": {
+        "threshold": 0.5,
+        "action": "warn"
+      }
+    }
+  },
+
+  "skills": {
+    "autoDiscovery": true,
+    "autoLoadAll": false,
+    "cacheEnabled": true,
+    "cacheTTLSeconds": 3600,
+    "directories": ["skills/python", "skills/typescript"]
+  },
+
+  "workspace": {
+    "rootDirectory": "./workspace",
+    "createIfMissing": true,
+    "autoCleanup": false,
+    "cleanupOnExit": true,
+    "maxSize": 1073741824,
+    "tempDirectory": ".temp"
+  },
+
+  "mcp": {
+    "configFile": "mcp_config.json",
+    "autoStartServers": true,
+    "serverStartTimeoutMs": 5000,
+    "keepAlivePingIntervalMs": 30000
+  },
+
+  "features": {
+    "progressiveToolLoading": true,
+    "inEnvironmentProcessing": true,
+    "automaticSummarization": true,
+    "metricsReporting": true,
+    "skillCreation": true,
+    "skillSharing": false
+  }
+}
