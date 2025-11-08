@@ -1,0 +1,18 @@
+{
+  "name": "mcp-code-execution",
+  "version": "0.1.0",
+  "description": "Token-efficient MCP server interaction through code execution",
+  "type": "module",
+  "scripts": {
+    "setup": "bun run setup.ts",
+    "generate-servers": "bun run scripts/generate-servers.ts"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  }
+}
+

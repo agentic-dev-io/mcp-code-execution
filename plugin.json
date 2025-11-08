@@ -1,0 +1,212 @@
+{
+  "$schema": "https://docs.claude.com/schemas/plugin-manifest.json",
+  "schemaVersion": "1",
+
+  "name": "mcp-code-execution",
+  "displayName": "MCP Code Execution",
+  "version": "1.0.0",
+  "description": "Token-efficient MCP server interaction through code execution. Reduces context usage by 95-99% through progressive tool disclosure and in-environment processing.",
+
+  "author": {
+    "name": "Anthropic",
+    "url": "https://www.anthropic.com"
+  },
+
+  "license": "MIT",
+  "repository": "https://github.com/anthropics/mcp-code-execution",
+
+  "commands": [
+    {
+      "name": "setup-mcp",
+      "displayName": "Setup MCP Workspace",
+      "description": "Initialize an MCP code execution workspace with configuration and directory structure",
+      "category": "setup",
+      "file": "plugin/commands/setupMCP.ts"
+    },
+    {
+      "name": "generate-wrappers",
+      "displayName": "Generate Server Wrappers",
+      "description": "Automatically generate Python and TypeScript wrappers for configured MCP servers",
+      "category": "generation",
+      "file": "plugin/commands/generateWrappers.ts"
+    },
+    {
+      "name": "list-skills",
+      "displayName": "List Available Skills",
+      "description": "Show all registered skills with descriptions, tags, and dependencies",
+      "category": "discovery",
+      "file": "plugin/commands/listSkills.ts"
+    },
+    {
+      "name": "create-skill",
+      "displayName": "Create New Skill",
+      "description": "Create a reusable skill pattern from successful task solutions",
+      "category": "skill-management",
+      "file": "plugin/commands/createSkill.ts"
+    },
+    {
+      "name": "validate-config",
+      "displayName": "Validate MCP Configuration",
+      "description": "Check MCP server configuration for errors and connectivity",
+      "category": "diagnostics",
+      "file": "plugin/commands/validateConfig.ts"
+    }
+  ],
+
+  "agents": [
+    {
+      "name": "mcp-task-executor",
+      "displayName": "MCP Task Executor",
+      "description": "Execute token-efficient tasks using MCP servers with automatic data processing and summarization",
+      "file": "plugin/agents/taskExecutor.ts",
+      "capabilities": [
+        "execute-mcp-tasks",
+        "process-large-datasets",
+        "generate-summaries",
+        "handle-retries"
+      ]
+    }
+  ],
+
+  "hooks": [
+    {
+      "name": "task:before-start",
+      "file": "plugin/hooks/onTaskStart.ts"
+    },
+    {
+      "name": "task:after-complete",
+      "file": "plugin/hooks/onTaskComplete.ts"
+    },
+    {
+      "name": "task:on-error",
+      "file": "plugin/hooks/onError.ts"
+    }
+  ],
+
+  "skills": [
+    {
+      "name": "extract-action-items",
+      "displayName": "Extract Action Items",
+      "description": "Extract action items from text based on configurable prefixes (ACTION:, TODO:, FOLLOW-UP:)",
+      "language": "python",
+      "file": "skills/python/extract_action_items.py",
+      "tags": ["text-processing", "document-analysis", "nlp"]
+    },
+    {
+      "name": "filter-large-dataset",
+      "displayName": "Filter Large Dataset",
+      "description": "Efficiently filter large datasets in-environment without loading into context",
+      "language": "python",
+      "file": "skills/python/example_data_filter.py",
+      "tags": ["data-processing", "filtering", "optimization"]
+    }
+  ],
+
+  "configuration": {
+    "schema": {
+      "type": "object",
+      "properties": {
+        "workspaceDirectory": {
+          "type": "string",
+          "description": "Root directory for code execution and file operations",
+          "default": "./workspace"
+        },
+        "maxRetries": {
+          "type": "integer",
+          "description": "Maximum number of retries for failed tool calls",
+          "default": 3,
+          "minimum": 0,
+          "maximum": 10
+        },
+        "requestTimeoutMs": {
+          "type": "integer",
+          "description": "Timeout in milliseconds for MCP server requests",
+          "default": 30000,
+          "minimum": 5000,
+          "maximum": 300000
+        },
+        "enableMetrics": {
+          "type": "boolean",
+          "description": "Enable performance metrics collection and reporting",
+          "default": true
+        },
+        "enableSecurityPolicies": {
+          "type": "boolean",
+          "description": "Enable security policies (workspace isolation, rate limiting, input validation)",
+          "default": true
+        },
+        "rateLimitCallsPerMinute": {
+          "type": "integer",
+          "description": "Maximum tool calls per minute per server",
+          "default": 60,
+          "minimum": 1
+        },
+        "autoSkillDiscovery": {
+          "type": "boolean",
+          "description": "Automatically discover and register new skills",
+          "default": true
+        }
+      }
+    },
+    "file": "plugin/config/default-config.json"
+  },
+
+  "dependencies": {
+    "runtime": {
+      "python": ">=3.10",
+      "node": ">=18.0.0"
+    },
+    "packages": {
+      "python": [
+        "mcp>=0.1.0"
+      ],
+      "npm": [
+        "@modelcontextprotocol/sdk@^1.0.0"
+      ]
+    }
+  },
+
+  "marketplace": {
+    "category": "code-execution",
+    "tags": ["mcp", "automation", "code", "token-efficiency", "python", "typescript"],
+    "keywords": [
+      "MCP",
+      "Model Context Protocol",
+      "code execution",
+      "token efficiency",
+      "automation",
+      "data processing",
+      "skill registry"
+    ],
+    "compatibility": {
+      "minVersion": "1.0.0",
+      "maxVersion": "*"
+    }
+  },
+
+  "resources": {
+    "documentation": "README.md",
+    "gettingStarted": "README.md#quick-start",
+    "changelog": "CHANGELOG.md"
+  },
+
+  "capabilities": {
+    "codeExecution": {
+      "python": true,
+      "typescript": true,
+      "allowFileSystem": true,
+      "allowNetworkAccess": true,
+      "allowProcessSpawning": true
+    },
+    "skills": {
+      "registry": true,
+      "discovery": true,
+      "sharing": false
+    },
+    "monitoring": {
+      "metrics": true,
+      "logging": true,
+      "profiling": true
+    }
+  }
+}

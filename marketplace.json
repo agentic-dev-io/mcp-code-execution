@@ -1,0 +1,197 @@
+{
+  "$schema": "https://docs.claude.com/schemas/marketplace.json",
+  "schemaVersion": 1,
+
+  "marketplaceMetadata": {
+    "name": "MCP Code Execution Marketplace",
+    "displayName": "MCP Code Execution",
+    "description": "Official marketplace for MCP Code Execution plugins and skills",
+    "type": "official",
+    "maintainer": {
+      "name": "Anthropic",
+      "email": "plugins@anthropic.com",
+      "url": "https://www.anthropic.com"
+    },
+    "repository": "https://github.com/anthropics/mcp-code-execution",
+    "website": "https://docs.claude.com/plugins/mcp-code-execution",
+    "version": "1.0.0",
+    "lastUpdated": "2024-11-08",
+    "license": "MIT"
+  },
+
+  "policies": {
+    "versioningStrategy": "semantic",
+    "securityRequirements": {
+      "codeReview": true,
+      "securityAudit": true,
+      "testCoverage": 80
+    },
+    "submissionRequirements": {
+      "documentation": true,
+      "changelog": true,
+      "license": true,
+      "tests": true
+    },
+    "updatePolicy": {
+      "majorVersions": "require approval",
+      "minorVersions": "automatic",
+      "patchVersions": "automatic"
+    }
+  },
+
+  "plugins": [
+    {
+      "id": "mcp-code-execution",
+      "name": "mcp-code-execution",
+      "displayName": "MCP Code Execution",
+      "version": "1.0.0",
+      "description": "Token-efficient MCP server interaction through code execution. Reduces context usage by 95-99% through progressive tool disclosure and in-environment processing.",
+
+      "author": {
+        "name": "Anthropic",
+        "email": "plugins@anthropic.com",
+        "url": "https://www.anthropic.com"
+      },
+
+      "repository": "https://github.com/anthropics/mcp-code-execution",
+      "homepage": "https://docs.claude.com/plugins/mcp-code-execution",
+      "documentation": "https://docs.claude.com/plugins/mcp-code-execution",
+
+      "license": "MIT",
+      "licenseUrl": "https://github.com/anthropics/mcp-code-execution/blob/main/LICENSE",
+
+      "category": "code-execution",
+      "tags": [
+        "mcp",
+        "automation",
+        "code",
+        "token-efficiency",
+        "python",
+        "typescript",
+        "data-processing",
+        "skill-registry"
+      ],
+
+      "keywords": [
+        "MCP",
+        "Model Context Protocol",
+        "code execution",
+        "token efficiency",
+        "automation",
+        "data processing",
+        "skill registry",
+        "Python",
+        "TypeScript"
+      ],
+
+      "manifestFile": "claude-plugin.json",
+      "manifestUrl": "https://raw.githubusercontent.com/anthropics/mcp-code-execution/main/claude-plugin.json",
+
+      "installationUrl": "https://github.com/anthropics/mcp-code-execution/releases/download/v1.0.0/mcp-code-execution-v1.0.0.zip",
+
+      "features": {
+        "commands": 5,
+        "agents": 1,
+        "hooks": 3,
+        "skills": 2,
+        "languages": ["python", "typescript"]
+      },
+
+      "requirements": {
+        "minClaudeCodeVersion": "1.0.0",
+        "python": ">=3.10",
+        "node": ">=18.0.0",
+        "disk": "100MB"
+      },
+
+      "ratings": {
+        "average": 5.0,
+        "count": 0,
+        "trend": "new"
+      },
+
+      "statistics": {
+        "downloads": 0,
+        "installations": 0,
+        "activeUsers": 0,
+        "rating": 5.0
+      },
+
+      "compatibility": {
+        "minVersion": "1.0.0",
+        "maxVersion": "*",
+        "supportedPlatforms": ["linux", "macos", "windows"]
+      },
+
+      "release": {
+        "version": "1.0.0",
+        "releaseDate": "2024-11-08",
+        "changelog": "Initial release with full MCP client support, server wrapper generation, skill registry, and security policies",
+        "downloadUrl": "https://github.com/anthropics/mcp-code-execution/releases/download/v1.0.0/mcp-code-execution-v1.0.0.zip",
+        "checksumUrl": "https://github.com/anthropics/mcp-code-execution/releases/download/v1.0.0/checksum.txt"
+      },
+
+      "pricing": {
+        "type": "free",
+        "cost": 0,
+        "license": "open-source"
+      },
+
+      "status": "active",
+      "verified": true,
+      "featured": true,
+      "trending": true,
+
+      "screenshots": [],
+      "icon": "icon.png",
+      "banner": "banner.png",
+
+      "support": {
+        "email": "plugins@anthropic.com",
+        "github": "https://github.com/anthropics/mcp-code-execution/issues",
+        "documentation": "https://docs.claude.com/plugins/mcp-code-execution",
+        "community": "https://discord.gg/anthropic"
+      },
+
+      "team": [
+        {
+          "name": "Anthropic Plugin Team",
+          "role": "maintainer",
+          "email": "plugins@anthropic.com"
+        }
+      ],
+
+      "dependencies": {
+        "plugins": [],
+        "frameworks": [],
+        "services": ["mcp-servers"]
+      },
+
+      "metadata": {
+        "indexed": true,
+        "searchable": true,
+        "discoverable": true,
+        "featured": true,
+        "verified": true,
+        "official": true
+      }
+    }
+  ],
+
+  "categories": [
+    {
+      "id": "code-execution",
+      "name": "Code Execution",
+      "description": "Plugins for executing code and automating tasks",
+      "pluginCount": 1
+    }
+  ],
+
+  "statistics": {
+    "totalPlugins": 1,
+    "totalDownloads": 0,
+    "totalInstallations": 0,
+    "averageRating": 5.0,
+    "lastUpdated": "2024-11-08"
+  }
+}

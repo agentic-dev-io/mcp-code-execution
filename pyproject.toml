@@ -1,0 +1,23 @@
+[project]
+name = "mcp-code-execution"
+version = "0.1.0"
+description = "Token-efficient MCP server interaction through code execution"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "mcp>=0.1.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-asyncio>=0.21.0",
+]
+
+[tool.uv]
+dev-dependencies = []
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+
