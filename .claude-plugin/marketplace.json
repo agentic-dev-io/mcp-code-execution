@@ -1,6 +1,8 @@
 {
   "name": "mcp-code-execution-marketplace",
-  "description": "Token-efficient MCP server interaction through code execution. Reduces context usage by 95-99%.",
+  "metadata": {
+    "description": "Token-efficient MCP server interaction through code execution. Reduces context usage by 95-99%."
+  },
   "owner": {
     "name": "bjoernbethge",
     "url": "https://github.com/bjoernbethge"
