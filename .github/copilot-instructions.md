@@ -111,7 +111,7 @@ from servers.python.google_drive import get_document
 # ✅ Good: Process data locally, return summary
 doc = await get_document(document_id='abc123')
 lines = doc['content'].split('\n')
-filtered = [l for l in lines if 'ACTION:' in l]
+filtered = [line for line in lines if 'ACTION:' in line]
 print(f"Extracted {len(filtered)} action items from {len(doc['content'])} chars")
 ```
 
