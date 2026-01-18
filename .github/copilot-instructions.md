@@ -110,9 +110,10 @@ from servers.python.google_drive import get_document
 
 # ✅ Good: Process data locally, return summary
 doc = await get_document(document_id='abc123')
-lines = doc['content'].split('\n')
+content = doc['content']
+lines = content.split('\n')
 filtered = [line for line in lines if 'ACTION:' in line]
-print(f"Extracted {len(filtered)} action items from {len(doc['content'])} chars")
+print(f"Extracted {len(filtered)} action items from {len(content)} chars")
 ```
 
 ### Patterns to Avoid
