@@ -1,5 +1,7 @@
 # MCP Code Execution Plugin
 
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/N4N71WOHZ3)
+
 Token-efficient MCP server interaction through code execution. Reduces context usage by **95-99%** through progressive tool disclosure and in-environment processing.
 
 ## 🎯 The Problem
